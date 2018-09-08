@@ -42,6 +42,9 @@ namespace net
 class Buffer : public muduo::copyable
 {
  public:
+  /**
+  * 在buf最前面预留了8byte空间,某些场景如果需要在最前面增加数据时而不需要进行移动
+  **/
   static const size_t kCheapPrepend = 8;
   static const size_t kInitialSize = 1024;
 

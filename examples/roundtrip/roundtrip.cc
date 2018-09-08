@@ -29,6 +29,10 @@ void serverMessageCallback(const TcpConnectionPtr& conn,
                            muduo::Timestamp receiveTime)
 {
   int64_t message[2];
+
+  /**
+  * 规定了16byte为一个完整的数据包
+  **/
   while (buffer->readableBytes() >= frameLen)
   {
     memcpy(message, buffer->peek(), frameLen);

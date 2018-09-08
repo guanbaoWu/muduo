@@ -137,7 +137,12 @@ class TcpConnection : boost::noncopyable,
   StateE state_;  // FIXME: use atomic variable
   bool reading_;
   // we don't expose those classes to client.
+
+  /**
+  * TcpConnection析构时会导致Socket析构,进而调用Socket的析构函数关闭socket
+  **/
   boost::scoped_ptr<Socket> socket_;
+  
   boost::scoped_ptr<Channel> channel_;
   const InetAddress localAddr_;
   const InetAddress peerAddr_;
