@@ -14,6 +14,10 @@
 
 using namespace muduo::net;
 
+/**
+* @comment:
+* 根据环境变量决定采取何种IO多路复用
+**/
 Poller* Poller::newDefaultPoller(EventLoop* loop)
 {
   if (::getenv("MUDUO_USE_POLL"))

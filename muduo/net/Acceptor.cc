@@ -23,11 +23,19 @@
 using namespace muduo;
 using namespace muduo::net;
 
+/**
+* @comment:
+* 创建socket
+* 创建Channel
+* 调用函数bind进行地址绑定
+* 设置socket的一系列标记
+**/
 Acceptor::Acceptor(EventLoop* loop, const InetAddress& listenAddr, bool reuseport)
   : loop_(loop),
     acceptSocket_(sockets::createNonblockingOrDie(listenAddr.family())),
     acceptChannel_(loop, acceptSocket_.fd()),
     listenning_(false),
+    
     idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {
   assert(idleFd_ >= 0);
@@ -45,11 +53,20 @@ Acceptor::~Acceptor()
   ::close(idleFd_);
 }
 
+/**
+* @comment:
+* 监听连接事件
+**/
 void Acceptor::listen()
 {
   loop_->assertInLoopThread();
   listenning_ = true;
   acceptSocket_.listen();
+
+  /**
+  * @comment:
+  * 读事件加入轮询事件中,以Channel为单位
+  **/
   acceptChannel_.enableReading();
 }
 
@@ -78,6 +95,12 @@ void Acceptor::handleRead()
     // Read the section named "The special problem of
     // accept()ing when you can't" in libev's doc.
     // By Marc Lehmann, author of libev.
+    /**
+	* @comment:
+	* EMFILE错误表示描述符已经用尽
+	* muduo采用的措施是:
+	* 在构造Acceptor是创建了一个空闲的fd,出现该错误时,释放这个空闲的fd,并再次accept,然后再关闭此次连接
+	**/
     if (errno == EMFILE)
     {
       ::close(idleFd_);

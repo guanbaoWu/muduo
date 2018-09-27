@@ -99,6 +99,10 @@ EventLoop::~EventLoop()
   t_loopInThisThread = NULL;
 }
 
+/**
+* @comment:
+* 事件主循环
+**/
 void EventLoop::loop()
 {
   assert(!looping_);
@@ -110,6 +114,12 @@ void EventLoop::loop()
   while (!quit_)
   {
     activeChannels_.clear();
+
+	/**
+	* @comment:
+	* 目前IO多路复用支持两种:epoll\poll,其派生与基类:Poller
+	* 具体采取何种实现取决于函数:newDefaultPoller
+	**/
     pollReturnTime_ = poller_->poll(kPollTimeMs, &activeChannels_);
     ++iteration_;
     if (Logger::logLevel() <= Logger::TRACE)

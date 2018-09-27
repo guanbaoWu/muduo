@@ -39,6 +39,10 @@ EventLoopThread::~EventLoopThread()
   }
 }
 
+/**
+* @comment:
+* 根据等待新线程创建loop,并加入到EventLoopThreadPool::loops_
+**/
 EventLoop* EventLoopThread::startLoop()
 {
   assert(!thread_.started());
@@ -55,10 +59,19 @@ EventLoop* EventLoopThread::startLoop()
   return loop_;
 }
 
+/**
+* @comment:
+* 新线程被创建的时候调用:Thread::start()-->runInThread
+* 创建loop,并唤醒等待的函数:startLoop,并进入loop事件主循环
+**/
 void EventLoopThread::threadFunc()
 {
   EventLoop loop;
 
+  /**
+  * @comment:
+  * callback_一般为线程初始化的函数,取决于创建线程的对象,如: TcpServer::threadInitCallback_
+  **/
   if (callback_)
   {
     callback_(&loop);

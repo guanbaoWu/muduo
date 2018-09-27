@@ -40,6 +40,10 @@ void EventLoopThreadPool::start(const ThreadInitCallback& cb)
 
   started_ = true;
 
+  /**
+  * @comment:
+  * 根据线程数量创建EventLoopThread(one loop per thread)
+  **/
   for (int i = 0; i < numThreads_; ++i)
   {
     char buf[name_.size() + 32];
@@ -54,6 +58,10 @@ void EventLoopThreadPool::start(const ThreadInitCallback& cb)
   }
 }
 
+/**
+* @comment:
+* 多线程时存在着多个loop,返回空闲的loop
+**/
 EventLoop* EventLoopThreadPool::getNextLoop()
 {
   baseLoop_->assertInLoopThread();
